@@ -25,7 +25,7 @@ function createRedlock(client: StubRedis): Redlock {
   return new Redlock([client as unknown as Client]);
 }
 
-test.skip("extend throws when the drift consumes the whole extension", async (t) => {
+test("extend throws when the drift consumes the whole extension", async (t) => {
   const redlock = createRedlock(new StubRedis());
   const lock = await redlock.acquire(["{redlock}extend-min"], 100000);
 
@@ -34,7 +34,7 @@ test.skip("extend throws when the drift consumes the whole extension", async (t)
   await t.throwsAsync(() => lock.extend(1), { instanceOf: ExecutionError });
 });
 
-test.skip("extend throws when the reply arrives after the new validity elapses", async (t) => {
+test("extend throws when the reply arrives after the new validity elapses", async (t) => {
   const redlock = createRedlock(new StubRedis(300));
   const lock = await redlock.acquire(["{redlock}extend-slow"], 100000);
 

@@ -404,12 +404,27 @@ export default class Redlock extends EventEmitter {
         (settings?.driftFactor ?? this.settings.driftFactor) * duration
       ) + 2;
 
+    const expiration = start + duration - drift;
+
+    // The extension reached a quorum, but the resulting validity has already
+    // elapsed: the duration was too short to cover the drift, or the operation
+    // took longer than the duration to reach the quorum. Per the Redlock
+    // specification, the client may only consider the lock re-acquired if the
+    // extension happened within the validity time, so fail loudly instead of
+    // handing out an already-expired lock.
+    if (expiration <= Date.now()) {
+      throw new ExecutionError(
+        "Cannot extend a lock: the resulting validity has already elapsed.",
+        attempts
+      );
+    }
+
     const replacement = new Lock(
       this,
       existing.resources,
       existing.value,
       attempts,
-      start + duration - drift
+      expiration
     );
 
     return replacement;
