@@ -42,7 +42,7 @@ async function acquireWithin(
   }
 }
 
-test.skip("acquire fails when 2 clients split their votes 1-1", async (t) => {
+test("acquire fails when 2 clients split their votes 1-1", async (t) => {
   const redlock = new Redlock([createStubClient(1), createStubClient(0)], {
     retryCount: 0,
     retryDelay: 0,
@@ -59,7 +59,7 @@ test.skip("acquire fails when 2 clients split their votes 1-1", async (t) => {
   t.is(stats.votesAgainst.size, 1);
 });
 
-test.skip("acquire fails when 4 clients split their votes 2-2", async (t) => {
+test("acquire fails when 4 clients split their votes 2-2", async (t) => {
   const redlock = new Redlock(
     [
       createStubClient(1),

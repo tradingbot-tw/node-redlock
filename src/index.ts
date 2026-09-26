@@ -535,6 +535,16 @@ export default class Redlock extends EventEmitter {
           stats.membershipSize
         ) {
           done();
+
+          // A quorum was never reached, so the votes are split (which happens
+          // whenever an even number of clients divides evenly). Treat this as a
+          // vote against so the caller can retry or fail instead of waiting for
+          // a quorum that can never arrive.
+          resolve({
+            vote: "against",
+            stats: statsPromise,
+            start,
+          });
         }
       };
 
