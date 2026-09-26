@@ -95,7 +95,7 @@ function releasesFor(client: StubClient, resource: string): ScriptCall[] {
 // A one-millisecond duration can never produce a positive remaining validity:
 // the drift is always at least 2ms, so `start + duration - drift` is in the
 // past by the time the quorum is reached.
-test.skip("acquire rejects a lock whose validity has already elapsed (short duration)", async (t) => {
+test("acquire rejects a lock whose validity has already elapsed (short duration)", async (t) => {
   const client = createStubClient();
   const redlock = createRedlock(client);
 
@@ -110,7 +110,7 @@ test.skip("acquire rejects a lock whose validity has already elapsed (short dura
 });
 
 // Simulate a quorum reply that arrives after the lock duration has elapsed.
-test.skip("acquire rejects a lock whose validity elapsed while awaiting the quorum", async (t) => {
+test("acquire rejects a lock whose validity elapsed while awaiting the quorum", async (t) => {
   const client = createStubClient({ acquireDelay: 100 });
   const redlock = createRedlock(client);
 
