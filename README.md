@@ -135,6 +135,15 @@ redlock.on("error", (error) => {
 
 Additionally, a per-attempt and per-client stats (including errors) are made available on the `attempt` propert of both `Lock` and `ExecutionError` classes.
 
+### Expired locks are never handed out
+
+A lock is only returned once its validity has been computed from the elapsed
+acquisition time. Because the drift compensation is always at least 2
+milliseconds, a `duration` that is too small to cover both the round-trip time
+and the drift can leave the computed validity in the past by the time the
+quorum is reached. In that case `acquire` releases any keys it set and throws
+an `ExecutionError`, so callers never receive a `Lock` that is already expired.
+
 ## API
 
 Please view the (very concise) source code or TypeScript definitions for a detailed breakdown of the API.
