@@ -217,8 +217,9 @@ module invariants {
     )
 
   // source: source.md §Making the algorithm more reliable: Extending the lock
-  // 「The client should only consider the lock re-acquired if it was able to extend the lock into the majority of instances, and within the validity time」
-  // 「extends the TTL of the key if the key exists and its value is still the random value the client assigned when the lock was acquired」
+  // 「The client should only consider the lock re-acquired if it was able to extend」
+  // 「the lock into the majority of instances, and within the validity time」
+  // 「if the key exists and its value is still the random value the client assigned」
   val INV_extendRequiresMajorityWithinValidity: bool =
     CLIENTS.forall(c =>
       RESOURCES.forall(r => {
