@@ -103,6 +103,12 @@ try {
 }
 ```
 
+`extend` throws an `ExecutionError` when the extension reaches a quorum but the
+resulting validity has already elapsed — for example when the requested duration
+is too short to cover the clock-drift allowance, or when the reply takes longer
+than the duration to arrive. In that case the previous lock is invalidated and
+must not be reused.
+
 ### Use in CommonJS Projects
 
 Beginning in version 5, this package is published primarily as an ECMAScript module. While this is universally accepted as the format of the future, there remain some interoperability quirks when used in CommonJS node applications. For major version 5, this package **also** distributes a copy transpiled to CommonJS. Please ensure that your project either uses either the ECMAScript or CommonJS version **but NOT both**.
