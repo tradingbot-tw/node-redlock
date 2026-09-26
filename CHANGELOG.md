@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fail an operation when every client has voted but no quorum was reached (for example when an even number of clients splits its votes evenly), instead of leaving `acquire`, `extend`, and `release` pending forever.
+
 ## v4.0.0
 
 - Add support for multi-resource locks (via [#55](https://github.com/mike-marcacci/node-redlock/pull/55)).
