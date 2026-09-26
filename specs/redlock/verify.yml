@@ -1,0 +1,74 @@
+# Redlock 模型階段驗證清單（ADR-018）
+#
+# 每個 check 由 factory-run 以 `quint run`（mode: run）重新執行並判定結果；
+# 本檔不宣告預期結果。反例由 CI 產生 ITF 後回報。
+#
+# 常數 domain_justification 規則：以程式實際接受的輸入為準，程式未限制者
+# 涵蓋邊界值與奇偶兩種情況。
+
+instances:
+  - module: n1
+    constants:
+      N: { value: "1", domain_justification: "src/index.ts:207-211 只檢查 clients.size !== 0；程式未限制節點數與奇偶，取邊界最小值 1" }
+      CLIENTS: { value: "Set(1, 2)", domain_justification: "src/index.ts:206 以 new Set(clients) 建立，未限制 client 數；取 2 才能觀察 mutual exclusion" }
+      RESOURCES: { value: "Set(1)", domain_justification: "src/index.ts:297-341 直接將 resources 傳入 _execute，未檢查長度；取 1 為邊界" }
+      DURATION: { value: "4", domain_justification: "src/index.ts:302-304 只檢查整數（Math.floor(duration) !== duration）；未限制最小值，取一般值 4" }
+      AUTO_EXTENSION_THRESHOLD: { value: "0", domain_justification: "src/index.ts:700-704 要求 <= duration - 100（0 <= 4-100 不成立，using 會丟錯）；此實例不執行 using，取 0" }
+  - module: n2
+    constants:
+      N: { value: "2", domain_justification: "src/index.ts:207-211 未限制節點數；取偶數 2 以涵蓋平票" }
+      CLIENTS: { value: "Set(1, 2)", domain_justification: "src/index.ts:206 未限制 client 數；取 2" }
+      RESOURCES: { value: "Set(1)", domain_justification: "src/index.ts:297-341 未檢查 resources 長度；取 1" }
+      DURATION: { value: "4", domain_justification: "src/index.ts:302-304 只檢查整數，未限制最小值；取一般值 4" }
+      AUTO_EXTENSION_THRESHOLD: { value: "0", domain_justification: "src/index.ts:700-704；此實例不執行 using" }
+  - module: n3
+    constants:
+      N: { value: "3", domain_justification: "src/index.ts:207-211 未限制節點數；取奇數 3（規格建議值）" }
+      CLIENTS: { value: "Set(1, 2)", domain_justification: "src/index.ts:206 未限制 client 數；取 2" }
+      RESOURCES: { value: "Set(1)", domain_justification: "src/index.ts:297-341 未檢查 resources 長度；取 1" }
+      DURATION: { value: "4", domain_justification: "src/index.ts:302-304 只檢查整數，未限制最小值；取一般值 4" }
+      AUTO_EXTENSION_THRESHOLD: { value: "0", domain_justification: "src/index.ts:700-704；此實例不執行 using" }
+  - module: n4
+    constants:
+      N: { value: "4", domain_justification: "src/index.ts:207-211 未限制節點數；取偶數 4 以涵蓋平票" }
+      CLIENTS: { value: "Set(1, 2)", domain_justification: "src/index.ts:206 未限制 client 數；取 2" }
+      RESOURCES: { value: "Set(1)", domain_justification: "src/index.ts:297-341 未檢查 resources 長度；取 1" }
+      DURATION: { value: "4", domain_justification: "src/index.ts:302-304 只檢查整數，未限制最小值；取一般值 4" }
+      AUTO_EXTENSION_THRESHOLD: { value: "0", domain_justification: "src/index.ts:700-704；此實例不執行 using" }
+  - module: n3r2
+    constants:
+      N: { value: "3", domain_justification: "src/index.ts:207-211 未限制節點數；取奇數 3" }
+      CLIENTS: { value: "Set(1, 2)", domain_justification: "src/index.ts:206 未限制 client 數；取 2" }
+      RESOURCES: { value: "Set(1, 2)", domain_justification: "src/index.ts:297-341 未檢查 resources 長度；取 2 以涵蓋多資源" }
+      DURATION: { value: "4", domain_justification: "src/index.ts:302-304 只檢查整數，未限制最小值；取一般值 4" }
+      AUTO_EXTENSION_THRESHOLD: { value: "0", domain_justification: "src/index.ts:700-704；此實例不執行 using" }
+  - module: n3MinDuration
+    constants:
+      N: { value: "3", domain_justification: "src/index.ts:207-211 未限制節點數；取奇數 3" }
+      CLIENTS: { value: "Set(1, 2)", domain_justification: "src/index.ts:206 未限制 client 數；取 2" }
+      RESOURCES: { value: "Set(1)", domain_justification: "src/index.ts:297-341 未檢查 resources 長度；取 1" }
+      DURATION: { value: "1", domain_justification: "src/index.ts:302-304 只檢查整數，未限制最小值；取邊界最小值 1" }
+      AUTO_EXTENSION_THRESHOLD: { value: "0", domain_justification: "src/index.ts:700-704；此實例不執行 using" }
+  - module: n3Using
+    constants:
+      N: { value: "3", domain_justification: "src/index.ts:207-211 未限制節點數；取奇數 3" }
+      CLIENTS: { value: "Set(1, 2)", domain_justification: "src/index.ts:206 未限制 client 數；取 2" }
+      RESOURCES: { value: "Set(1)", domain_justification: "src/index.ts:297-341 未檢查 resources 長度；取 1" }
+      DURATION: { value: "200", domain_justification: "src/index.ts:302-304 只檢查整數，未限制最小值；取 200 以符合 using 對 duration 的要求" }
+      AUTO_EXTENSION_THRESHOLD: { value: "50", domain_justification: "src/index.ts:700-704 要求 automaticExtensionThreshold <= duration - 100；50 <= 200-100" }
+
+checks:
+  - { instance: n3, invariant: INV_mutualExclusion, mode: run, max_steps: 24, max_samples: 15000, timeout_seconds: 90, witnesses: [WIT_twoClientsContend] }
+  - { instance: n3Using, invariant: INV_mutualExclusion, mode: run, max_steps: 30, max_samples: 20000, timeout_seconds: 180, witnesses: [WIT_twoClientsContend] }
+  - { instance: n3, invariant: INV_acquireRequiresMajority, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_clientHoldsLock] }
+  - { instance: n3, invariant: INV_neverHandsOutExpiredLock, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_validLockHeld] }
+  - { instance: n3MinDuration, invariant: INV_neverHandsOutExpiredLock, mode: run, max_steps: 18, max_samples: 5000, timeout_seconds: 90, witnesses: [WIT_validLockHeld] }
+  - { instance: n3Using, invariant: INV_neverHandsOutExpiredLock, mode: run, max_steps: 30, max_samples: 20000, timeout_seconds: 180, witnesses: [WIT_validLockHeld] }
+  - { instance: n3r2, invariant: INV_lockValueUniqueness, mode: run, max_steps: 24, max_samples: 15000, timeout_seconds: 90, witnesses: [WIT_lockValuesDistinct] }
+  - { instance: n1, invariant: INV_lockValueUniqueness, mode: run, max_steps: 18, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_lockValuesDistinct] }
+  - { instance: n3, invariant: INV_heldLockBackedByOwnKeys, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_lockBackedByKeys] }
+  - { instance: n3, invariant: INV_extendRequiresMajorityWithinValidity, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_extendSucceeded] }
+  - { instance: n3Using, invariant: INV_extendRequiresMajorityWithinValidity, mode: run, max_steps: 30, max_samples: 20000, timeout_seconds: 180, witnesses: [WIT_extendSucceeded] }
+  - { instance: n2, invariant: INV_quorumSettles, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_allVotesReturned] }
+  - { instance: n4, invariant: INV_quorumSettles, mode: run, max_steps: 28, max_samples: 20000, timeout_seconds: 90, witnesses: [WIT_allVotesReturned] }
+  - { instance: n3, invariant: INV_quorumSettles, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_allVotesReturned] }
