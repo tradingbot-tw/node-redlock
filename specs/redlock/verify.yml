@@ -16,7 +16,7 @@ instances:
       AUTO_EXTENSION_THRESHOLD: { value: "0", domain_justification: "src/index.ts:700-704 要求 <= duration - 100（0 <= 4-100 不成立，using 會丟錯）；此實例不執行 using，取 0" }
   - module: n2
     constants:
-      N: { value: "2", domain_justification: "src/index.ts:207-211 未限制節點數；取偶數邊界 2 以涵蓋平票" }
+      N: { value: "2", domain_justification: "src/index.ts:207-211 未限制節點數；取偶數 2 以涵蓋平票" }
       CLIENTS: { value: "Set(1, 2)", domain_justification: "src/index.ts:206 未限制 client 數；取 2" }
       RESOURCES: { value: "Set(1)", domain_justification: "src/index.ts:297-341 未檢查 resources 長度；取 1" }
       DURATION: { value: "4", domain_justification: "src/index.ts:302-304 只檢查整數，未限制最小值；取一般值 4" }
@@ -58,16 +58,17 @@ instances:
       AUTO_EXTENSION_THRESHOLD: { value: "50", domain_justification: "src/index.ts:700-704 要求 automaticExtensionThreshold <= duration - 100；50 <= 200-100" }
 
 checks:
-  - { instance: n3, invariant: INV_mutualExclusion, mode: run, max_steps: 24, max_samples: 15000, timeout_seconds: 120, witnesses: [WIT_twoClientsContend] }
+  - { instance: n3, invariant: INV_mutualExclusion, mode: run, max_steps: 24, max_samples: 15000, timeout_seconds: 90, witnesses: [WIT_twoClientsContend] }
   - { instance: n3Using, invariant: INV_mutualExclusion, mode: run, max_steps: 30, max_samples: 20000, timeout_seconds: 180, witnesses: [WIT_twoClientsContend] }
-  - { instance: n3, invariant: INV_acquireRequiresMajority, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 120, witnesses: [WIT_clientHoldsLock] }
-  - { instance: n3, invariant: INV_neverHandsOutExpiredLock, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 120, witnesses: [WIT_validLockHeld] }
-  - { instance: n3MinDuration, invariant: INV_neverHandsOutExpiredLock, mode: run, max_steps: 18, max_samples: 5000, timeout_seconds: 120, witnesses: [WIT_validLockHeld] }
-  - { instance: n3r2, invariant: INV_lockValueUniqueness, mode: run, max_steps: 24, max_samples: 15000, timeout_seconds: 120, witnesses: [WIT_lockValuesDistinct] }
-  - { instance: n1, invariant: INV_lockValueUniqueness, mode: run, max_steps: 18, max_samples: 10000, timeout_seconds: 120, witnesses: [WIT_lockValuesDistinct] }
-  - { instance: n3, invariant: INV_heldLockBackedByOwnKeys, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 120, witnesses: [WIT_lockBackedByKeys] }
-  - { instance: n3, invariant: INV_extendRequiresMajorityWithinValidity, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 120, witnesses: [WIT_extendSucceeded] }
+  - { instance: n3, invariant: INV_acquireRequiresMajority, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_clientHoldsLock] }
+  - { instance: n3, invariant: INV_neverHandsOutExpiredLock, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_validLockHeld] }
+  - { instance: n3MinDuration, invariant: INV_neverHandsOutExpiredLock, mode: run, max_steps: 18, max_samples: 5000, timeout_seconds: 90, witnesses: [WIT_validLockHeld] }
+  - { instance: n3Using, invariant: INV_neverHandsOutExpiredLock, mode: run, max_steps: 30, max_samples: 20000, timeout_seconds: 180, witnesses: [WIT_validLockHeld] }
+  - { instance: n3r2, invariant: INV_lockValueUniqueness, mode: run, max_steps: 24, max_samples: 15000, timeout_seconds: 90, witnesses: [WIT_lockValuesDistinct] }
+  - { instance: n1, invariant: INV_lockValueUniqueness, mode: run, max_steps: 18, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_lockValuesDistinct] }
+  - { instance: n3, invariant: INV_heldLockBackedByOwnKeys, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_lockBackedByKeys] }
+  - { instance: n3, invariant: INV_extendRequiresMajorityWithinValidity, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_extendSucceeded] }
   - { instance: n3Using, invariant: INV_extendRequiresMajorityWithinValidity, mode: run, max_steps: 30, max_samples: 20000, timeout_seconds: 180, witnesses: [WIT_extendSucceeded] }
-  - { instance: n2, invariant: INV_quorumSettles, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 120, witnesses: [WIT_allVotesReturned] }
-  - { instance: n4, invariant: INV_quorumSettles, mode: run, max_steps: 28, max_samples: 20000, timeout_seconds: 120, witnesses: [WIT_allVotesReturned] }
-  - { instance: n3, invariant: INV_quorumSettles, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 120, witnesses: [WIT_allVotesReturned] }
+  - { instance: n2, invariant: INV_quorumSettles, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_allVotesReturned] }
+  - { instance: n4, invariant: INV_quorumSettles, mode: run, max_steps: 28, max_samples: 20000, timeout_seconds: 90, witnesses: [WIT_allVotesReturned] }
+  - { instance: n3, invariant: INV_quorumSettles, mode: run, max_steps: 24, max_samples: 10000, timeout_seconds: 90, witnesses: [WIT_allVotesReturned] }
