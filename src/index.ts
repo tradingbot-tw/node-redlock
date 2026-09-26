@@ -320,13 +320,20 @@ export default class Redlock extends EventEmitter {
           (settings?.driftFactor ?? this.settings.driftFactor) * duration
         ) + 2;
 
-      return new Lock(
-        this,
-        resources,
-        value,
-        attempts,
-        start + duration - drift
-      );
+      const expiration = start + duration - drift;
+
+      // If the computed validity has already elapsed by the time the quorum was
+      // reached, the lock must not be handed out. Throwing here makes the catch
+      // block below release any state that was set, so the resources are not
+      // held until the keys expire.
+      if (expiration <= Date.now()) {
+        throw new ExecutionError(
+          "The lock could not be acquired because its validity had already elapsed.",
+          attempts
+        );
+      }
+
+      return new Lock(this, resources, value, attempts, expiration);
     } catch (error) {
       // If there was an error acquiring the lock, release any partial lock
       // state that may exist on a minority of clients.
